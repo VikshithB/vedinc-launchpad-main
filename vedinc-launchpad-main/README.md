@@ -1,1 +1,1 @@
-#Vedinc official website.
+Vedinc official website.
