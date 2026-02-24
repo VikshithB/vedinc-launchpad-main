@@ -48,7 +48,7 @@ const Navbar = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
     navigate("/login");
-    window.location.reload(); // force navbar refresh
+    window.location.reload();
   };
 
   return (
@@ -65,7 +65,8 @@ const Navbar = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setOpen(true)}
-            className={`text-white hover:text-blue-500 transition-colors ${open ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            className={`text-white hover:text-blue-500 transition-colors ${open ? "opacity-0 pointer-events-none" : "opacity-100"
+              }`}
           >
             <Menu size={32} />
           </motion.button>
@@ -95,13 +96,16 @@ const Navbar = () => {
                 </motion.div>
               </>
             )}
+
             {token && (
-              <button
-                onClick={logout}
-                className="hidden sm:block text-sm text-red-400 font-medium hover:text-red-300 transition-colors"
-              >
-                Logout
-              </button>
+              <>
+                <button
+                  onClick={logout}
+                  className="hidden sm:block text-sm text-red-400 font-medium hover:text-red-300 transition-colors"
+                >
+                  Logout
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -111,15 +115,15 @@ const Navbar = () => {
       <AnimatePresence>
         {open && (
           <>
-            {/* Backdrop click to close */}
-            <motion.div 
+            {/* Backdrop */}
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setOpen(false)}
               className="fixed inset-0 z-[110] bg-black/40 backdrop-blur-sm"
             />
-            
+
             <motion.div
               initial={{ x: -20, y: -20, opacity: 0, scale: 0.95 }}
               animate={{ x: 0, y: 0, opacity: 1, scale: 1 }}
@@ -128,9 +132,8 @@ const Navbar = () => {
               className="fixed top-6 left-6 z-[120] w-[320px] bg-black border border-white/10 
                          rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-10 overflow-hidden"
             >
-              {/* Blue Glow Background Accent */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-3xl -mr-16 -mt-16" />
-              
+
               <div className="relative z-10">
                 <div className="flex flex-col gap-10">
                   <div className="flex justify-start">
@@ -157,23 +160,24 @@ const Navbar = () => {
                                    transition-all duration-300 text-left uppercase tracking-tight"
                         >
                           <span className="relative z-10">{item}</span>
-                          <motion.div 
-                            className="absolute -bottom-1 left-0 h-1 bg-blue-500 w-0 group-hover:w-full transition-all duration-300"
-                          />
+                          <motion.div className="absolute -bottom-1 left-0 h-1 bg-blue-500 w-0 group-hover:w-full transition-all duration-300" />
                         </button>
                       </motion.div>
                     ))}
 
                     {token && (
-                      <motion.button
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.2 }}
-                        onClick={logout}
-                        className="text-lg font-bold text-red-500 hover:text-red-400 mt-4 transition-colors uppercase text-left"
-                      >
-                        Logout
-                      </motion.button>
+                      <>
+
+                        <motion.button
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.25 }}
+                          onClick={logout}
+                          className="text-lg font-bold text-red-500 hover:text-red-400 mt-4 transition-colors uppercase text-left"
+                        >
+                          Logout
+                        </motion.button>
+                      </>
                     )}
                   </div>
                 </div>

@@ -17,9 +17,11 @@ export const signToken = (payload: Payload) => {
     );
 };
 
-export const verifyToken = (token: string) => {
+export const verifyToken = (token: string): Payload => {
     return verify(
         token,
-        jwtConfig.secret as Secret
+        jwtConfig.secret as Secret,
+        { algorithms: ["HS256"] }
     ) as Payload;
 };
+

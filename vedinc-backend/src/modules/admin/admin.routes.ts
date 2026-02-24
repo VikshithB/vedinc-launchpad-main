@@ -1,37 +1,63 @@
 import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireRole } from "../../middlewares/role.middleware";
-import { createAdmin, deleteAdmin } from "./admin.controller";
-import { listAdmins } from "./admin.controller";
-import { listAllUsers } from "./admin.controller";
+import { UserRole } from "@prisma/client";
+import { uploadImage } from "../../middlewares/upload.middleware";
+import { listAllEnrollments } from "./admin.controller";
+
+import {
+    createAdmin,
+    listAllUsers,
+    updateUserRole,
+    deleteUser,
+} from "./admin.controller";
 
 const router = Router();
 
+/* =========================
+   CREATE INSTRUCTOR
+========================= */
 router.post(
     "/create-admin",
     authenticate,
-    requireRole("SUPER_ADMIN"),
+    requireRole(UserRole.SUPER_ADMIN),
+    uploadImage.single("avatar"),
     createAdmin
 );
 
-// ✅ NEW: delete admin
-router.delete(
-    "/users/:id",
-    authenticate,
-    requireRole("SUPER_ADMIN"),
-    deleteAdmin
-);
+/* =========================
+   USER MANAGEMENT (SUPER_ADMIN ONLY)
+========================= */
+
+// List all users
 router.get(
     "/users",
     authenticate,
-    requireRole("SUPER_ADMIN"),
-    listAdmins
-);
-router.get(
-    "/all-users",
-    authenticate,
-    requireRole("ADMIN"), // ADMIN + SUPER_ADMIN
+    requireRole(UserRole.SUPER_ADMIN),
     listAllUsers
 );
 
+// Update role
+router.patch(
+    "/users/:id/role",
+    authenticate,
+    requireRole(UserRole.SUPER_ADMIN),
+    updateUserRole
+);
+
+// Delete user
+router.delete(
+    "/users/:id",
+    authenticate,
+    requireRole(UserRole.SUPER_ADMIN),
+    deleteUser
+);
+
+// Get Enrollments
+router.get(
+    "/enrollments",
+    authenticate,
+    requireRole(UserRole.SUPER_ADMIN),
+    listAllEnrollments
+);
 export default router;

@@ -1,130 +1,81 @@
 import { Request, Response } from "express";
 import {
-    createPdfCourseService,
-    deletePdfCourseService,
+    createCourseService,
     listCoursesService,
-    getPdfCourseForUserService,
+    getCourseContentService,
+    deleteCourseService,
+    updateCourseService,
 } from "./course.service";
-import { uploadPdfToSupabase } from "../../utils/uploadPdf";
-import { AppError } from "../../utils/error";
-import { getSignedPdfUrl } from "../../utils/signedPdf";
 
-/**
- * ADMIN: Create PDF course with upload
- */
-export const createPdfCourseWithUpload = async (
-    req: Request,
-    res: Response
-) => {
+/* =========================
+   ADMIN: Create Course
+========================= */
+export const createCourseController = async (req: Request, res: Response) => {
     try {
-        const { title, description, category } = req.body;
-
-        if (!title || !category) {
-            return res.status(400).json({
-                message: "Title and category are required",
-            });
-        }
-
-        if (!req.file) {
-            return res.status(400).json({
-                message: "PDF file required",
-            });
-        }
-
-        const pdfUrl = await uploadPdfToSupabase(req.file);
-
-        const course = await createPdfCourseService({
-            title,
-            description,
-            category,
-            pdfUrl,
-        });
-
+        const course = await createCourseService(req.body);
         return res.status(201).json(course);
-    } catch (error) {
-        console.error("Create PDF course failed:", error);
+    } catch (error: any) {
         return res.status(500).json({
-            message: "Failed to create PDF course",
+            message: error.message || "Failed to create course",
         });
     }
 };
 
-/**
- * PUBLIC: List all PDF courses
- */
-export const listPdfCourses = async (_req: Request, res: Response) => {
+/* =========================
+   PUBLIC: List Courses
+========================= */
+export const listCoursesController = async (_req: Request, res: Response) => {
     try {
         const courses = await listCoursesService();
         return res.json(courses);
-    } catch (err) {
-        console.error(err);
+    } catch {
         return res.status(500).json({
             message: "Failed to fetch courses",
         });
     }
 };
 
-/**
- * ADMIN: Delete PDF course
- */
-export const deletePdfCourseController = async (
-    req: Request,
-    res: Response
-) => {
+/* =========================
+   AUTH: Get Course Content
+========================= */
+export const getCourseContentController = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-
-        await deletePdfCourseService(id as string);
-
-        return res.json({
-            message: "PDF course deleted",
-        });
-    } catch (err: any) {
-        if (err instanceof AppError) {
-            return res.status(err.statusCode).json({
-                message: err.message,
-            });
-        }
-
-        console.error(err);
-        return res.status(500).json({
-            message: "Failed to delete course",
+        const course = await getCourseContentService(id as string);
+        return res.json(course);
+    } catch (error: any) {
+        return res.status(404).json({
+            message: error.message,
         });
     }
 };
 
-/**
- * USER: View / Download a single PDF course (SIGNED URL)
- */
-export const getPdfCourseForUserController = async (
-    req: Request,
-    res: Response
-) => {
+/* =========================
+   ADMIN: Update Course
+========================= */
+export const updateCourseController = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-
-        const course = await getPdfCourseForUserService(id as string);
-
-        if (!course) {
-            return res.status(404).json({
-                message: "Course not found",
-            });
-        }
-
-        const signedUrl = await getSignedPdfUrl(course.pdfUrl);
-
-        return res.json({
-            id: course.id,
-            title: course.title,
-            category: course.category,
-            description: course.description,
-            pdfUrl: signedUrl,
-            expiresIn: 300,
-        });
-    } catch (err) {
-        console.error(err);
+        const updated = await updateCourseService(id as string, req.body);
+        return res.json(updated);
+    } catch (error: any) {
         return res.status(500).json({
-            message: "Failed to fetch course",
+            message: error.message || "Failed to update course",
+        });
+    }
+};
+
+/* =========================
+   ADMIN: Delete Course
+========================= */
+export const deleteCourseController = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await deleteCourseService(id as string);
+        return res.json({ message: "Course deleted" });
+    } catch {
+        return res.status(500).json({
+            message: "Failed to delete course",
         });
     }
 };

@@ -30,7 +30,7 @@ async function main() {
 
     // 👤 NORMAL USER
     const userEmail = "user@vedinc.in";
-    const userPassword = "user123";
+    const userPassword = "user@123";
 
     const userExists = await prisma.user.findUnique({
         where: { email: userEmail },

@@ -2,28 +2,32 @@ import prisma from "../../lib/prisma";
 
 export const createCourse = (
     title: string,
-    category: string,
-    description: string | "",
-    pdfUrl: string
+    categoryId: string,
+    description: string,
+    price: number,
+    thumbnail?: string,
+    instructorId?: string
 ) => {
-    return prisma.pdfCourse.create({
+    return prisma.course.create({
         data: {
             title,
-            category,
+            categoryId,
             description,
-            pdfUrl,
+            price,
+            thumbnail,
+            instructorId,
         },
     });
 };
 
 export const getAllCourses = () => {
-    return prisma.pdfCourse.findMany({
+    return prisma.course.findMany({
         orderBy: { createdAt: "desc" },
     });
 };
 
 export const deleteCourseById = (id: string) => {
-    return prisma.pdfCourse.delete({
+    return prisma.course.delete({
         where: { id },
     });
 };

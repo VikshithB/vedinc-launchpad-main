@@ -1,36 +1,27 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import VantaBackground from "@/components/VantaBackground";
-import { Link } from "react-router-dom";
 import { FunkyHeading } from "@/components/ui/FunkyHeading";
+import { api } from "@/lib/api";
 
 const Login = () => {
     const navigate = useNavigate();
 
-    // 🔹 state
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // 🔹 submit handler
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setLoading(true);
 
         try {
-            const res = await fetch("http://localhost:5000/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+            const data = await api.login(email, password);
 
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.message || "Login failed");
-                return;
+            if (!data.token) {
+                throw new Error(data.message || "Login failed");
             }
 
             localStorage.setItem("token", data.token);
@@ -42,8 +33,8 @@ const Login = () => {
                 navigate("/");
             }
 
-        } catch {
-            setError("Server error");
+        } catch (err: any) {
+            setError(err.message || "Server error");
         } finally {
             setLoading(false);
         }
@@ -62,7 +53,6 @@ const Login = () => {
                         Welcome back
                     </p>
 
-                    {/* ❌ error */}
                     {error && (
                         <div className="mb-4 text-sm text-red-400 text-center">
                             {error}

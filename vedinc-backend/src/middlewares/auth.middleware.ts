@@ -16,7 +16,9 @@ export const authenticate = (
         const token = header.split(" ")[1];
         const payload = verifyToken(token);
 
-        req.user = payload; // attach user
+        // JWT payload should contain { id, role }
+        req.user = payload;
+
         next();
     } catch {
         return res.status(401).json({ message: "Invalid token" });

@@ -1,7 +1,8 @@
-// src/modules/courses/course.types.ts
 export type CreateCourseInput = {
     title: string;
-    category: string;
-    pdfUrl: string;
-    description?: string;
+    description: string;
+    price: number;
+    categoryId: string;
+    thumbnail?: string;
+    instructorId?: string;
 };

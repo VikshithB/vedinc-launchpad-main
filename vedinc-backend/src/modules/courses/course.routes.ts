@@ -1,41 +1,43 @@
 import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware";
 import { requireRole } from "../../middlewares/role.middleware";
-import { uploadPdf } from "../../middlewares/upload.middleware";
 import {
-    createPdfCourseWithUpload,
-    listPdfCourses,
-    deletePdfCourseController,
-    getPdfCourseForUserController,
+    createCourseController,
+    listCoursesController,
+    getCourseContentController,
+    deleteCourseController,
+    updateCourseController,
 } from "./course.controller";
+import { UserRole } from "@prisma/client";
 
 const router = Router();
 
-// ADMIN: upload PDF course
+/* PUBLIC */
+router.get("/", listCoursesController);
+
+/* AUTH */
+router.get("/:id", authenticate, getCourseContentController);
+
+/* ADMIN */
 router.post(
-    "/admin/pdf",
+    "/admin",
     authenticate,
-    requireRole("ADMIN"),
-    uploadPdf.single("pdf"),
-    createPdfCourseWithUpload
+    requireRole(UserRole.ADMIN),
+    createCourseController
 );
 
-// PUBLIC: list PDF courses
-router.get("/pdf", listPdfCourses);
-
-// USER: view/download single PDF
-router.get(
-    "/pdf/:id",
+router.put(
+    "/:id",
     authenticate,
-    getPdfCourseForUserController
+    requireRole(UserRole.ADMIN),
+    updateCourseController
 );
 
-// ADMIN: delete PDF course
 router.delete(
-    "/pdf/:id",
+    "/:id",
     authenticate,
-    requireRole("ADMIN"),
-    deletePdfCourseController
+    requireRole(UserRole.ADMIN),
+    deleteCourseController
 );
 
 export default router;

@@ -1,24 +1,14 @@
 import { Router } from "express";
 import { authenticate } from "../../middlewares/auth.middleware";
 import {
-    listPdfCourses,
-    getPdfCourseForUserController,
+    listCoursesController,
+    getCourseContentController,
 } from "./course.controller";
 
 const router = Router();
 
-// USER: list all courses
-router.get(
-    "/pdf",
-    authenticate,
-    listPdfCourses
-);
+router.get("/", authenticate, listCoursesController);
 
-// USER: view/download PDF
-router.get(
-    "/pdf/:id",
-    authenticate,
-    getPdfCourseForUserController
-);
+router.get("/:id", authenticate, getCourseContentController);
 
 export default router;
