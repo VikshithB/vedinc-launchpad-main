@@ -51,9 +51,7 @@ export const api = {
     },
 
     getCourseContent: async (id: string) => {
-        const res = await fetch(`${API_BASE}/courses/${id}`, {
-            headers: authHeader(),
-        });
+        const res = await fetch(`${API_BASE}/courses/${id}`);
         return res.json();
     },
 
@@ -150,13 +148,12 @@ export const api = {
     },
 
     /* =========================
-       ENROLLMENTS
-    ========================= */
+   ENROLLMENTS
+========================= */
 
-    checkEnrollment: async (courseId: string) => {
+    checkEnrollment: async (courseId: string, email: string) => {
         const res = await fetch(
-            `${API_BASE}/enrollments/check/${courseId}`,
-            { headers: authHeader() }
+            `${API_BASE}/enrollments/check/${courseId}?email=${email}`
         );
         return res.json();
     },
@@ -171,7 +168,6 @@ export const api = {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                ...authHeader(),
             },
             body: JSON.stringify(data),
         });

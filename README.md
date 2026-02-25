@@ -223,5 +223,5 @@ Specify the license here if applicable (MIT, Apache 2.0, etc.).
 ## Maintainer
 
 Simeen Ali
-Bhakta Ranajn Sahu
+Bhakta Ranjan Sahu
 

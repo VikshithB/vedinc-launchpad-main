@@ -156,12 +156,6 @@ export default function IndustryHub() {
                                         {course.description}
                                     </p>
 
-                                    <div className="flex items-center gap-2 mt-4 text-yellow-400 text-sm">
-                                        <Star size={14} fill="currentColor" />
-                                        <span className="text-slate-300">4.8</span>
-                                        <span className="text-slate-500">(1,203)</span>
-                                    </div>
-
                                     <div className="flex justify-between items-center mt-6">
                                         <span className="text-lg font-semibold text-cyan-400">
                                             {course.price === 0

@@ -42,31 +42,7 @@ const tools = [
   { name: 'Istio', logo: istioLogo, size: 70, mobileSize: 45, glow: 'rgba(70, 107, 186, 0.5)' },
 ];
 
-const StarBackground = () => {
-  const stars = useMemo(() => {
-    return Array.from({ length: 80 }).map((_, i) => ({
-      id: i,
-      top: `${Math.random() * 100}%`,
-      left: `${Math.random() * 100}%`,
-      size: Math.random() * 2 + 0.5,
-      duration: Math.random() * 3 + 2,
-    }));
-  }, []);
 
-  return (
-    <div className="absolute inset-0 z-0 pointer-events-none">
-      {stars.map((star) => (
-        <motion.div
-          key={star.id}
-          className="absolute bg-white rounded-full"
-          style={{ top: star.top, left: star.left, width: star.size, height: star.size }}
-          animate={{ opacity: [0.1, 0.6, 0.1] }}
-          transition={{ duration: star.duration, repeat: Infinity, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-};
 
 const FloatingTool = ({ tool, index, pos, mouseX, mouseY, rotation = 0 }: any) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -79,8 +55,8 @@ const FloatingTool = ({ tool, index, pos, mouseX, mouseY, rotation = 0 }: any) =
 
   // Scale and offset adjustment to keep tools visible and out of heading/footer
   const scale = isMobile ? 0.45 : 1;
-  const horizontalSpread = isMobile ? 0.8 : 1.2; 
-  const verticalStretch = isMobile ? 0.8 : 0.7; 
+  const horizontalSpread = isMobile ? 0.8 : 1.2;
+  const verticalStretch = isMobile ? 0.8 : 0.7;
 
   const finalX = pos.x * scale * horizontalSpread;
   const finalY = pos.y * scale * verticalStretch + (isMobile ? 30 : 0);
@@ -94,11 +70,11 @@ const FloatingTool = ({ tool, index, pos, mouseX, mouseY, rotation = 0 }: any) =
       style={{ x, y }}
       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
     >
-      <motion.div 
-        whileHover={{ scale: 1.1, zIndex: 100 }} 
+      <motion.div
+        whileHover={{ scale: 1.1, zIndex: 100 }}
         className="relative group flex flex-col items-center cursor-pointer"
       >
-        <div 
+        <div
           className="absolute inset-0 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
           style={{ backgroundColor: tool.glow, transform: 'scale(1.3)' }}
         />
@@ -132,21 +108,21 @@ const ToolsSection = () => {
 
   const positions = useMemo(() => {
     const posArr: { x: number; y: number }[] = [];
-    
+
     const orbits = [
-      { radius: 280, items: 6 },  
-      { radius: 460, items: 11 }  
+      { radius: 280, items: 6 },
+      { radius: 460, items: 11 }
     ];
-    
+
     let currentItem = 0;
 
     orbits.forEach((orbit, orbitIdx) => {
       for (let i = 0; i < orbit.items; i++) {
         if (currentItem >= tools.length) break;
-        
-        const angle = (2 * Math.PI * i) / orbit.items + (orbitIdx * 0.5); 
+
+        const angle = (2 * Math.PI * i) / orbit.items + (orbitIdx * 0.5);
         const radius = orbit.radius;
-        
+
         const x = Math.cos(angle) * radius;
         const y = Math.sin(angle) * radius;
 
@@ -185,18 +161,17 @@ const ToolsSection = () => {
   const sideOpacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
 
   return (
-    <section 
-      ref={sectionRef} 
-      className="min-h-[120vh] relative bg-[#01040f] overflow-x-hidden flex flex-col items-center justify-center py-20"
+    <section
+      ref={sectionRef}
+      className="min-h-[120vh] relative bg-transparent overflow-x-hidden flex flex-col items-center justify-center py-20"
     >
-      <StarBackground />
 
       {/* Vertical Side Heading - Pure Scroll Parallax */}
       <div className="absolute left-8 md:left-16 top-0 bottom-0 flex items-center z-40">
         <motion.div
           style={{ x: sideX, opacity: sideOpacity }}
         >
-          <h2 
+          <h2
             className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-100 uppercase tracking-tighter whitespace-nowrap"
             style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)' }}
           >
@@ -204,10 +179,10 @@ const ToolsSection = () => {
           </h2>
         </motion.div>
       </div>
-      
+
       <div className="relative h-[600px] md:h-[700px] w-full max-w-[90vw] z-20 flex items-center justify-center">
         {/* Central Azure Logo */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -220,14 +195,14 @@ const ToolsSection = () => {
           >
             {/* Glow effect behind Azure */}
             <div className="absolute inset-0 blur-[60px] bg-blue-600/20 rounded-full scale-150" />
-            <img 
-              src={azureLogo} 
-              alt="Azure" 
-              className="w-32 h-32 md:w-56 md:h-56 object-contain relative z-10 filter drop-shadow-[0_0_30px_rgba(0,120,212,0.3)]" 
+            <img
+              src={azureLogo}
+              alt="Azure"
+              className="w-32 h-32 md:w-56 md:h-56 object-contain relative z-10 filter drop-shadow-[0_0_30px_rgba(0,120,212,0.3)]"
             />
           </motion.div>
         </motion.div>
- 
+
         {/* Other Tools orbiting */}
         {tools.filter(t => t.name !== 'Azure').map((tool, index) => (
           <motion.div
@@ -237,18 +212,17 @@ const ToolsSection = () => {
             transition={{ delay: 0.05 * index, duration: 0.8, ease: "backOut" }}
             className="absolute inset-0 flex items-center justify-center"
           >
-            <FloatingTool 
-              tool={tool} 
-              index={index} 
+            <FloatingTool
+              tool={tool}
+              index={index}
               pos={positions[index]}
-              mouseX={mouseX} 
-              mouseY={mouseY} 
+              mouseX={mouseX}
+              mouseY={mouseY}
             />
           </motion.div>
         ))}
       </div>
-      
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-blue-900/10 to-transparent pointer-events-none" />
+
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(6,18,45,0.4),transparent_70%)] pointer-events-none" />
     </section>
   );

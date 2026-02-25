@@ -16,7 +16,7 @@ const router = Router();
 router.get("/", listCoursesController);
 
 /* AUTH */
-router.get("/:id", authenticate, getCourseContentController);
+router.get("/:id", getCourseContentController);
 
 /* ADMIN */
 router.post(

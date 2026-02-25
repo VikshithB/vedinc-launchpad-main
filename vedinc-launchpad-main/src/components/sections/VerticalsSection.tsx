@@ -3,7 +3,6 @@ import { FunkyHeading } from "@/components/ui/FunkyHeading";
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
-
 const VerticalsSection = () => {
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -17,7 +16,7 @@ const VerticalsSection = () => {
   // Animation stretched over 0.6 progress for a slower feel
   const headerY = useTransform(scrollYProgress, [0, 0.4], [800, 0]);
   const headerOpacity = useTransform(scrollYProgress, [0, 0.25], [0, 1]);
-  
+
   const leftX = useTransform(scrollYProgress, [0.08, 0.48], [-800, 0]);
   const rightX = useTransform(scrollYProgress, [0.08, 0.48], [800, 0]);
   const contentOpacity = useTransform(scrollYProgress, [0.08, 0.35], [0, 1]);
@@ -47,7 +46,7 @@ const VerticalsSection = () => {
     >
       <div className="container mx-auto px-4 flex flex-col items-center">
         {/* Header */}
-        <motion.div 
+        <motion.div
           style={{ y: headerY, opacity: headerOpacity }}
           className="mb-10 md:mb-16 z-70 relative text-center"
         >
@@ -59,9 +58,9 @@ const VerticalsSection = () => {
         <div className="w-full max-w-6xl relative z-30">
           <div className="w-full px-6 md:px-16">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 w-full items-stretch">
-              
+
               {/* Left Side Section */}
-              <motion.div 
+              <motion.div
                 style={{ x: leftX, opacity: contentOpacity }}
                 className="flex flex-col justify-between h-full"
               >
@@ -72,7 +71,7 @@ const VerticalsSection = () => {
                   <p className="text-[#c1cbe0] text-lg font-medium">{services.left.description}</p>
                   <p className="text-[#c1cbe0] text-base leading-relaxed">{services.left.details}</p>
                 </div>
-                
+
                 <div className="text-left mt-12 md:mt-20">
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -88,7 +87,7 @@ const VerticalsSection = () => {
               </motion.div>
 
               {/* Right Side Section */}
-              <motion.div 
+              <motion.div
                 style={{ x: rightX, opacity: contentOpacity }}
                 className="border-l-0 md:border-l border-white/10 pl-0 md:pl-16 mt-16 md:mt-0 flex flex-col justify-between h-full"
               >

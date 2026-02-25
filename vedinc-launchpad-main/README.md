@@ -1,1 +1,0 @@
-Vedinc official website.

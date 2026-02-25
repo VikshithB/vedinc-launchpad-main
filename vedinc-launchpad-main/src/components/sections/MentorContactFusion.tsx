@@ -22,12 +22,34 @@ const MentorContactFusion = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form submitted:', formState);
-        // Add submission logic here
+
+        if (!formState.name || !formState.email || !formState.phone || !formState.purpose) {
+            alert("Please fill all fields");
+            return;
+        }
+
+        const adminNumber = "919346401088"; // no + sign
+
+        const message = `
+New Mentor Contact Request - Vedinc Website
+
+Name: ${formState.name}
+Email: ${formState.email}
+Phone: ${formState.phone}
+
+Message:
+${formState.purpose}
+    `;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${adminNumber}?text=${encodedMessage}`;
+
+        // More reliable than window.open
+        window.location.href = whatsappURL;
     };
 
     return (
-        <section ref={sectionRef} id="mentor-contact" className="relative min-h-screen bg-black text-white overflow-x-hidden pt-20 px-4 md:px-12 flex items-center justify-center font-sans">
+        <section ref={sectionRef} id="mentor-contact" className="relative min-h-screen bg-transparent text-white overflow-x-hidden pt-20 px-4 md:px-12 flex items-center justify-center font-sans">
 
             {/* Geometric Shapes - Triangles - Clustered between Picture and Heading */}
             <motion.div
@@ -42,7 +64,7 @@ const MentorContactFusion = () => {
                 transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
                 className="absolute top-[45%] left-[8%] md:left-[18%] w-0 h-0 border-l-[25px] border-l-transparent border-b-[40px] border-b-sky-400 border-r-[25px] border-r-transparent opacity-50 z-10"
             />
-             <motion.div
+            <motion.div
                 style={{ y: useTransform(scrollYProgress, [0, 1], [120, -120]) }}
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -57,13 +79,13 @@ const MentorContactFusion = () => {
                 transition={{ duration: 0.8 }}
                 className="absolute bottom-0 left-0 md:left-0 z-10 w-full md:w-auto flex items-end justify-center pointer-events-none"
             >
-                <motion.img 
-                    src={mentorPic} 
-                    alt="Mentor" 
-                    className="h-[60vh] md:h-[80vh] w-auto object-contain filter grayscale brightness-110 contrast-125 opacity-30 md:opacity-100" 
-                style={{ transformOrigin: 'bottom center' }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                <motion.img
+                    src={mentorPic}
+                    alt="Mentor"
+                    className="h-[60vh] md:h-[80vh] w-auto object-contain filter grayscale brightness-110 contrast-125 opacity-30 md:opacity-100"
+                    style={{ transformOrigin: 'bottom center' }}
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
                 />
             </motion.div>
 
@@ -71,48 +93,48 @@ const MentorContactFusion = () => {
 
                 {/* Content Area (Form) */}
                 <div className="flex flex-col justify-center items-start text-left pt-10 pb-20 lg:py-20 relative z-30 w-full max-w-2xl px-4">
-                    <motion.h2 
+                    <motion.h2
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                         className="text-4xl md:text-6xl font-black text-white uppercase tracking-widest mb-10"
                     >
-                       CONTACT
+                        CONTACT
                     </motion.h2>
-                    <motion.form 
+                    <motion.form
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        onSubmit={handleSubmit} 
+                        onSubmit={handleSubmit}
                         className="w-full space-y-5"
                     >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <FormInput 
-                                icon={<User size={18} />} 
-                                placeholder="Full Name" 
+                            <FormInput
+                                icon={<User size={18} />}
+                                placeholder="Full Name"
                                 value={formState.name}
-                                onChange={(e) => setFormState({...formState, name: e.target.value})}
+                                onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                             />
-                            <FormInput 
-                                icon={<Mail size={18} />} 
-                                placeholder="Email Address" 
+                            <FormInput
+                                icon={<Mail size={18} />}
+                                placeholder="Email Address"
                                 type="email"
                                 value={formState.email}
-                                onChange={(e) => setFormState({...formState, email: e.target.value})}
+                                onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                             />
                         </div>
-                        
-                        <FormInput 
-                            icon={<Phone size={18} />} 
-                            placeholder="Phone Number" 
+
+                        <FormInput
+                            icon={<Phone size={18} />}
+                            placeholder="Phone Number"
                             type="tel"
                             value={formState.phone}
-                            onChange={(e) => setFormState({...formState, phone: e.target.value})}
+                            onChange={(e) => setFormState({ ...formState, phone: e.target.value })}
                         />
-                        
-                        <motion.div 
+
+                        <motion.div
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
@@ -123,7 +145,7 @@ const MentorContactFusion = () => {
                                 placeholder="How can we help you?"
                                 rows={4}
                                 value={formState.purpose}
-                                onChange={(e) => setFormState({...formState, purpose: e.target.value})}
+                                onChange={(e) => setFormState({ ...formState, purpose: e.target.value })}
                                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-5 text-white placeholder:text-white/20 focus:outline-none focus:border-primary/50 focus:bg-white/10 transition-all resize-none"
                             />
                         </motion.div>

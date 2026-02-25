@@ -16,7 +16,7 @@ type Lesson = {
     title: string;
     type: "VIDEO" | "PDF";
     duration?: string;
-    contentUrl?: string; // 🔥 IMPORTANT
+    contentUrl?: string;
 };
 
 type Module = {
@@ -68,6 +68,8 @@ export default function CourseDetail() {
         phone: "",
     });
 
+    /* ================= LOAD ================= */
+
     useEffect(() => {
         if (!id) return;
 
@@ -76,8 +78,17 @@ export default function CourseDetail() {
                 const data = await api.getCourseContent(id);
                 setCourse(data);
 
-                const enrollmentRes = await api.checkEnrollment(id);
-                setIsEnrolled(enrollmentRes.enrolled);
+                const storedEmail = localStorage.getItem(
+                    `course_email_${id}`
+                );
+
+                if (storedEmail) {
+                    const enrollmentRes = await api.checkEnrollment(
+                        id,
+                        storedEmail
+                    );
+                    setIsEnrolled(enrollmentRes.enrolled);
+                }
             } catch (err) {
                 console.error(err);
             } finally {
@@ -88,8 +99,15 @@ export default function CourseDetail() {
         load();
     }, [id]);
 
+    /* ================= ENROLL ================= */
+
     const handleEnroll = async () => {
         if (!id) return;
+
+        if (!formData.fullName || !formData.email || !formData.phone) {
+            alert("All fields required");
+            return;
+        }
 
         try {
             setEnrolling(true);
@@ -100,6 +118,11 @@ export default function CourseDetail() {
             });
 
             if (res.message) {
+                localStorage.setItem(
+                    `course_email_${id}`,
+                    formData.email
+                );
+
                 setIsEnrolled(true);
                 setShowModal(false);
                 alert("Enrollment successful 🎉");
@@ -155,75 +178,14 @@ export default function CourseDetail() {
 
                         {/* HERO */}
                         <div className="space-y-6">
-                            <h1 className="text-5xl font-extrabold text-white leading-tight">
+                            <h1 className="text-5xl font-extrabold text-white">
                                 {course.title}
                             </h1>
 
                             <p className="text-lg text-gray-400 max-w-3xl">
                                 {course.description}
                             </p>
-
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6">
-                                {course.level && (
-                                    <div className="bg-[#151e2b] p-4 rounded-lg border border-white/10 text-center">
-                                        <p className="text-xs text-gray-400">Level</p>
-                                        <p className="text-white font-semibold">
-                                            {course.level}
-                                        </p>
-                                    </div>
-                                )}
-
-                                {course.duration && (
-                                    <div className="bg-[#151e2b] p-4 rounded-lg border border-white/10 text-center">
-                                        <p className="text-xs text-gray-400">Duration</p>
-                                        <p className="text-white font-semibold">
-                                            {course.duration}
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
                         </div>
-
-                        {/* INSTRUCTOR */}
-                        {course.instructor && (
-                            <div className="bg-[#151e2b] border border-white/10 rounded-xl p-8">
-                                <h3 className="text-xl font-bold text-white mb-6">
-                                    Instructor
-                                </h3>
-
-                                <div className="flex items-start gap-6">
-                                    {course.instructor.avatar ? (
-                                        <img
-                                            src={course.instructor.avatar}
-                                            alt={course.instructor.name}
-                                            className="w-24 h-24 rounded-full object-cover border border-white/10"
-                                        />
-                                    ) : (
-                                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-white font-bold text-3xl">
-                                            {course.instructor.name.charAt(0)}
-                                        </div>
-                                    )}
-
-                                    <div>
-                                        <h4 className="text-xl font-bold text-white">
-                                            {course.instructor.name}
-                                        </h4>
-
-                                        {course.instructor.title && (
-                                            <p className="text-sm text-cyan-400 mt-2">
-                                                {course.instructor.title}
-                                            </p>
-                                        )}
-
-                                        {course.instructor.bio && (
-                                            <p className="text-sm text-gray-400 mt-4 leading-relaxed max-w-2xl">
-                                                {course.instructor.bio}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
 
                         {/* CURRICULUM */}
                         <div>
@@ -233,16 +195,19 @@ export default function CourseDetail() {
 
                             <div className="space-y-4">
                                 {course.modules.map((module, index) => {
-                                    const expanded = expandedModules.includes(module.id);
+                                    const expanded =
+                                        expandedModules.includes(module.id);
 
                                     return (
                                         <div
                                             key={module.id}
-                                            className="bg-[#151e2b] border border-white/10 rounded-xl overflow-hidden"
+                                            className="bg-[#151e2b] border border-white/10 rounded-xl"
                                         >
                                             <div
-                                                className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5 transition"
-                                                onClick={() => toggleModule(module.id)}
+                                                className="flex justify-between items-center p-5 cursor-pointer hover:bg-white/5"
+                                                onClick={() =>
+                                                    toggleModule(module.id)
+                                                }
                                             >
                                                 <div className="flex items-center gap-3 text-white font-semibold">
                                                     {expanded ? (
@@ -250,7 +215,8 @@ export default function CourseDetail() {
                                                     ) : (
                                                         <ChevronRight size={18} />
                                                     )}
-                                                    Module {index + 1}: {module.title}
+                                                    Module {index + 1}:{" "}
+                                                    {module.title}
                                                 </div>
 
                                                 <span className="text-xs text-gray-500">
@@ -260,44 +226,53 @@ export default function CourseDetail() {
 
                                             {expanded && (
                                                 <div className="border-t border-white/10">
-                                                    {module.lessons.map((lesson) => (
-                                                        <div
-                                                            key={lesson.id}
-                                                            onClick={() => {
-                                                                if (
-                                                                    isEnrolled &&
-                                                                    lesson.type === "PDF" &&
-                                                                    lesson.contentUrl
-                                                                ) {
-                                                                    window.open(
-                                                                        lesson.contentUrl,
-                                                                        "_blank"
-                                                                    );
-                                                                }
-                                                            }}
-                                                            className={`flex justify-between items-center p-4 border-b border-white/5 last:border-0 transition
-                                                                ${isEnrolled &&
-                                                                    lesson.type === "PDF"
-                                                                    ? "cursor-pointer hover:bg-white/5"
-                                                                    : "cursor-not-allowed opacity-60"
-                                                                }`}
-                                                        >
-                                                            <div className="flex items-center gap-3 text-sm">
-                                                                {lesson.type === "VIDEO" ? (
-                                                                    <PlayCircle size={16} className="text-cyan-400" />
-                                                                ) : (
-                                                                    <FileText size={16} className="text-purple-400" />
-                                                                )}
-                                                                {lesson.title}
-                                                            </div>
+                                                    {module.lessons.map(
+                                                        (lesson) => (
+                                                            <div
+                                                                key={lesson.id}
+                                                                onClick={() => {
+                                                                    if (
+                                                                        isEnrolled &&
+                                                                        lesson.type ===
+                                                                        "PDF" &&
+                                                                        lesson.contentUrl
+                                                                    ) {
+                                                                        window.open(
+                                                                            lesson.contentUrl,
+                                                                            "_blank"
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                className={`flex justify-between items-center p-4 border-b border-white/5 ${isEnrolled
+                                                                        ? "cursor-pointer hover:bg-white/5"
+                                                                        : "opacity-60 cursor-not-allowed"
+                                                                    }`}
+                                                            >
+                                                                <div className="flex items-center gap-3 text-sm">
+                                                                    {lesson.type ===
+                                                                        "VIDEO" ? (
+                                                                        <PlayCircle
+                                                                            size={16}
+                                                                            className="text-cyan-400"
+                                                                        />
+                                                                    ) : (
+                                                                        <FileText
+                                                                            size={16}
+                                                                            className="text-purple-400"
+                                                                        />
+                                                                    )}
+                                                                    {lesson.title}
+                                                                </div>
 
-                                                            <span className="text-xs text-gray-400">
-                                                                {isEnrolled
-                                                                    ? lesson.duration || "Available"
-                                                                    : "Locked"}
-                                                            </span>
-                                                        </div>
-                                                    ))}
+                                                                <span className="text-xs text-gray-400">
+                                                                    {isEnrolled
+                                                                        ? lesson.duration ||
+                                                                        "Available"
+                                                                        : "Locked"}
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -308,49 +283,22 @@ export default function CourseDetail() {
                     </div>
 
                     {/* RIGHT SIDEBAR */}
-                    <div className="self-start sticky top-32 h-fit">
-                        <div className="bg-[#1a2433] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-                            <div className="p-8 space-y-5">
-                                <span className="text-4xl font-extrabold text-white">
-                                    ₹{course.price.toLocaleString()}
-                                </span>
+                    <div className="self-start sticky top-32">
+                        <div className="bg-[#1a2433] border border-white/10 rounded-2xl p-8 space-y-5">
+                            <span className="text-4xl font-extrabold text-white">
+                                ₹{course.price.toLocaleString()}
+                            </span>
 
-                                <button
-                                    onClick={() => setShowModal(true)}
-                                    disabled={isEnrolled}
-                                    className={`w-full h-14 rounded-xl font-bold text-white text-lg transition-all duration-300 shadow-lg ${isEnrolled
-                                            ? "bg-green-600 cursor-not-allowed"
-                                            : "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400"
-                                        }`}
-                                >
-                                    {isEnrolled ? "Enrolled ✓" : "Enroll Now →"}
-                                </button>
-                            </div>
-
-                            {course.objectives && course.objectives.length > 0 && (
-                                <>
-                                    <div className="border-t border-white/10" />
-                                    <div className="p-8 space-y-5">
-                                        <h4 className="text-white font-semibold tracking-wide">
-                                            WHAT YOU'LL LEARN:
-                                        </h4>
-
-                                        <ul className="space-y-3 text-gray-300 text-sm">
-                                            {course.objectives.map((obj) => (
-                                                <li
-                                                    key={obj.id}
-                                                    className="flex items-start gap-3"
-                                                >
-                                                    <span className="text-green-400 mt-1">
-                                                        ✔
-                                                    </span>
-                                                    <span>{obj.text}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </>
-                            )}
+                            <button
+                                onClick={() => setShowModal(true)}
+                                disabled={isEnrolled}
+                                className={`w-full h-14 rounded-xl font-bold text-white ${isEnrolled
+                                        ? "bg-green-600 cursor-not-allowed"
+                                        : "bg-blue-600 hover:bg-blue-500"
+                                    }`}
+                            >
+                                {isEnrolled ? "Enrolled ✓" : "Enroll Now →"}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -358,7 +306,7 @@ export default function CourseDetail() {
 
             {/* MODAL */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
                     <div className="bg-[#151e2b] p-8 rounded-xl w-full max-w-lg space-y-4">
                         <h3 className="text-xl font-bold text-white">
                             Enter Your Details
@@ -373,7 +321,7 @@ export default function CourseDetail() {
                                     fullName: e.target.value,
                                 })
                             }
-                            className="w-full h-10 px-3 rounded-md bg-[#0B1120] border border-white/10 text-white"
+                            className="w-full h-10 px-3 bg-black border border-white/10 text-white"
                         />
 
                         <input
@@ -385,7 +333,7 @@ export default function CourseDetail() {
                                     email: e.target.value,
                                 })
                             }
-                            className="w-full h-10 px-3 rounded-md bg-[#0B1120] border border-white/10 text-white"
+                            className="w-full h-10 px-3 bg-black border border-white/10 text-white"
                         />
 
                         <input
@@ -397,13 +345,13 @@ export default function CourseDetail() {
                                     phone: e.target.value,
                                 })
                             }
-                            className="w-full h-10 px-3 rounded-md bg-[#0B1120] border border-white/10 text-white"
+                            className="w-full h-10 px-3 bg-black border border-white/10 text-white"
                         />
 
                         <div className="flex justify-end gap-4 pt-4">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="px-4 py-2 bg-gray-600 rounded-md"
+                                className="px-4 py-2 bg-gray-600"
                             >
                                 Cancel
                             </button>
@@ -411,7 +359,7 @@ export default function CourseDetail() {
                             <button
                                 onClick={handleEnroll}
                                 disabled={enrolling}
-                                className="px-4 py-2 bg-blue-600 rounded-md"
+                                className="px-4 py-2 bg-blue-600"
                             >
                                 {enrolling ? "Processing..." : "Confirm"}
                             </button>

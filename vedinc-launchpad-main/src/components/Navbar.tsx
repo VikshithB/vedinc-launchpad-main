@@ -82,16 +82,7 @@ const Navbar = () => {
                                border border-white/20 bg-white/10
                                backdrop-blur-md text-sm text-white font-medium"
                   >
-                    Login
-                  </Link>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }}>
-                  <Link
-                    to="/signup"
-                    className="hidden sm:block px-4 py-2 rounded-lg
-                               bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/20"
-                  >
-                    Signup
+                    Admin Login
                   </Link>
                 </motion.div>
               </>
