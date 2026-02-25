@@ -244,8 +244,8 @@ export default function CourseDetail() {
                                                                     }
                                                                 }}
                                                                 className={`flex justify-between items-center p-4 border-b border-white/5 ${isEnrolled
-                                                                        ? "cursor-pointer hover:bg-white/5"
-                                                                        : "opacity-60 cursor-not-allowed"
+                                                                    ? "cursor-pointer hover:bg-white/5"
+                                                                    : "opacity-60 cursor-not-allowed"
                                                                     }`}
                                                             >
                                                                 <div className="flex items-center gap-3 text-sm">
@@ -293,12 +293,36 @@ export default function CourseDetail() {
                                 onClick={() => setShowModal(true)}
                                 disabled={isEnrolled}
                                 className={`w-full h-14 rounded-xl font-bold text-white ${isEnrolled
-                                        ? "bg-green-600 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-500"
+                                    ? "bg-green-600 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-500"
                                     }`}
                             >
                                 {isEnrolled ? "Enrolled ✓" : "Enroll Now →"}
                             </button>
+                            {course.objectives && course.objectives.length > 0 && (
+                                <>
+                                    <div className="border-t border-white/10" />
+                                    <div className="p-2 space-y-5">
+                                        <h4 className="text-white font-semibold tracking-wide text-lg">
+                                            WHAT YOU'LL LEARN:
+                                        </h4>
+
+                                        <ul className="space-y-3 text-gray-300 text-sm">
+                                            {course.objectives.map((obj) => (
+                                                <li
+                                                    key={obj.id}
+                                                    className="flex items-start gap-3"
+                                                >
+                                                    <span className="text-green-400 mt-1">
+                                                        ✔
+                                                    </span>
+                                                    <span>{obj.text}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

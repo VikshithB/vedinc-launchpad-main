@@ -136,11 +136,6 @@ export default function IndustryHub() {
                                     <div className="absolute w-60 h-60 bg-cyan-400/10 blur-3xl rounded-full top-1/3 left-1/3" />
                                 </div>
 
-                                {/* Thumbnail */}
-                                <div className="h-44 bg-gradient-to-br from-cyan-500/10 to-indigo-500/10 flex items-center justify-center text-slate-500 text-sm">
-                                    Course Preview
-                                </div>
-
                                 <div className="p-6">
                                     {course.category?.name && (
                                         <span className="text-xs uppercase tracking-wider text-cyan-400">
