@@ -6,11 +6,13 @@ import prisma from "../../lib/prisma";
 export const createModuleService = async (data: {
     title: string;
     courseId: string;
+    order?: number;
 }) => {
     return prisma.module.create({
         data: {
             title: data.title,
             courseId: data.courseId,
+            ...(data.order !== undefined && { order: data.order }),
         },
     });
 };

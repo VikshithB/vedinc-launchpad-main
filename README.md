@@ -1,76 +1,26 @@
-# Vedinc Website
+# Vedinc Launchpad
 
 ## Project Overview
 
-Vedinc Launchpad is a full-stack web application designed to serve as a structured platform for launching, managing, or showcasing projects and user interactions. The application is divided into a frontend interface and a backend server, ensuring clean separation of concerns and scalability.
-
-This repository contains both the frontend and backend components required to run the application locally or deploy it to a production environment.
+Vedinc Launchpad is a full-stack web application designed to serve as a structured platform for launching, managing, or showcasing projects and user interactions. The application uses a monorepo structure with the frontend and backend managed together.
 
 ---
 
-## Architecture and Components
+## Architecture
 
-The project follows a client-server architecture and is structured into two primary parts:
+The project follows a client-server architecture using **npm workspaces**:
 
-### 1. Frontend
+### Frontend (Root)
+- **Vite** + **React** + **TypeScript**
+- **Tailwind CSS** + **ShadCN UI** components
+- Runs on port **8080** during development
+- API requests to `/api/*` are proxied to the backend
 
-The frontend is responsible for:
-
-* Rendering the user interface
-* Handling user interactions
-* Managing routing and navigation
-* Communicating with backend APIs
-* Managing client-side state
-* Handling form validation and submission
-
-It is built using TypeScript and modern web technologies. The frontend communicates with the backend using HTTP requests.
-
----
-
-### 2. Backend
-
-The backend handles:
-
-* API endpoint creation
-* Business logic implementation
-* Database interactions (if configured)
-* Authentication and authorization
-* Data validation and processing
-
-The backend exposes RESTful APIs that the frontend consumes to retrieve and manipulate data.
-
----
-
-## Features
-
-* Structured frontend and backend separation
-* API-driven architecture
-* Modular and scalable project structure
-* Clean and maintainable codebase
-* Ready for deployment with environment configuration
-
-(Add specific features such as authentication, dashboards, data management, etc., based on your implementation.)
-
----
-
-## Technologies Used
-
-Frontend:
-
-* TypeScript
-* CSS
-* (React / Next.js / Angular)
-
-Backend:
-
-* Node.js
-* Database integration (Supabase)
-
-Package Management:
-
-* npm
-
-(Add or modify technologies based on your actual `package.json` files.)
+### Backend (`server/`)
+- **Express** + **TypeScript**
+- **Prisma ORM** with Supabase (PostgreSQL)
+- Runs on port **5000** during development
+- RESTful API architecture
 
 ---
 
@@ -78,122 +28,163 @@ Package Management:
 
 ```
 vedinc-launchpad-main/
-│
+├── package.json              # Root workspace orchestrator
+├── index.html                # Frontend entry
+├── vite.config.ts            # Vite config with API proxy
+├── tailwind.config.ts        # Tailwind configuration
+├── tsconfig.json             # Frontend TypeScript config
+├── tsconfig.app.json
+├── tsconfig.node.json
+├── components.json           # ShadCN UI config
+├── postcss.config.js
+├── eslint.config.js
+├── vitest.config.ts
+├── public/                   # Static assets
 ├── src/                      # Frontend source code
 │   ├── components/           # Reusable UI components
-│   ├── pages/                # Application pages or routes
-│   ├── services/             # API communication logic
+│   ├── pages/                # Application pages/routes
+│   ├── hooks/                # Custom React hooks
+│   ├── lib/                  # Utilities
 │   └── assets/               # Static assets
-│
-├── public/                   # Public static files
-├── package.json              # Frontend dependencies and scripts
-│
-├── vedinc-backend/           # Backend server
-│   ├── controllers/          # API controller logic
-│   ├── models/               # Database models
-│   ├── routes/               # API route definitions
-│   ├── middleware/           # Custom middleware (if any)
-│   └── package.json          # Backend dependencies and scripts
-│
+├── server/                   # Backend (npm workspace)
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── prisma/               # Prisma schema & migrations
+│   └── src/                  # Backend source code
+│       ├── modules/          # Feature modules (auth, courses, etc.)
+│       ├── middlewares/       # Express middleware
+│       ├── config/           # Environment config
+│       ├── utils/            # Utilities
+│       └── server.ts         # Entry point
 └── README.md
 ```
-
-Adjust the structure above to match your exact repository layout if necessary.
 
 ---
 
 ## Installation and Setup
 
-### Clone the Repository
+### Prerequisites
+- Node.js (v18+)
+- npm (v7+ for workspaces support)
 
-```
+### Clone and Install
+
+```bash
 git clone https://github.com/Simeen19/vedinc-launchpad-main.git
 cd vedinc-launchpad-main
-```
-
----
-
-### Install Frontend Dependencies
-
-```
 npm install
 ```
 
-If the backend is inside a separate folder:
+> **One `npm install` from the root installs dependencies for both frontend and backend.**
 
+### Generate Prisma Client
+
+```bash
+npm run prisma:generate
 ```
-cd vedinc-backend
-npm install
+
+### Environment Variables
+
+Create `.env` files as needed:
+
+**Root `.env`** (frontend):
+```
+VITE_API_URL=http://localhost:5000
+```
+
+**`server/.env`** (backend):
+```
+PORT=5000
+NODE_ENV=development
+DATABASE_URL=your_database_url
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:8080
 ```
 
 ---
 
 ## Running the Application
 
-### Start the Backend Server
+### Start Both (Frontend + Backend)
 
-Navigate to the backend directory:
-
-```
-cd vedinc-backend
-npm start
+```bash
+npm run dev:all
 ```
 
-This typically starts the server at:
+### Start Frontend Only
 
-```
-http://localhost:3001
-```
-
-(Adjust the port based on your configuration.)
-
----
-
-### Start the Frontend Application
-
-From the root frontend directory:
-
-```
+```bash
 npm run dev
 ```
+Frontend runs at: `http://localhost:8080`
 
-This typically runs on:
+### Start Backend Only
 
+```bash
+npm run dev:server
 ```
-http://localhost:3000
+Backend runs at: `http://localhost:5000`
+
+---
+
+## Building for Production
+
+### Build Frontend
+
+```bash
+npm run build
+```
+
+### Build Backend
+
+```bash
+npm run build:server
+```
+
+### Build Both
+
+```bash
+npm run build:all
 ```
 
 ---
 
-## Environment Variables
+## Available Scripts
 
-If the application uses environment variables, create a `.env` file in the appropriate directory and configure:
-
-* PORT
-* DATABASE_URL or DB_URI
-* JWT_SECRET (if authentication is implemented)
-* API_BASE_URL (for frontend)
-
-Ensure environment variables are not committed to version control.
+| Script               | Description                                |
+| -------------------- | ------------------------------------------ |
+| `npm run dev`        | Start frontend dev server (Vite)           |
+| `npm run dev:server` | Start backend dev server (ts-node-dev)     |
+| `npm run dev:all`    | Start both frontend and backend            |
+| `npm run build`      | Build frontend for production              |
+| `npm run build:server` | Compile backend TypeScript               |
+| `npm run build:all`  | Build both frontend and backend            |
+| `npm run start:server` | Start compiled backend (production)      |
+| `npm run test`       | Run frontend tests (vitest)                |
+| `npm run lint`       | Run ESLint                                 |
+| `npm run prisma:generate` | Generate Prisma client              |
+| `npm run prisma:migrate`  | Run Prisma migrations               |
 
 ---
 
-## API Structure (Example)
+## API Structure
 
-Below is a sample API structure. Replace with actual endpoints from your backend.
-
-| Endpoint        | Method | Description        |
-| --------------- | ------ | ------------------ |
-| /api/users      | GET    | Retrieve all users |
-| /api/auth/login | POST   | Authenticate user  |
-| /api/items      | POST   | Create new item    |
-| /api/items/:id  | DELETE | Delete item        |
+| Endpoint              | Method | Description              |
+| --------------------- | ------ | ------------------------ |
+| /api/auth/login       | POST   | Authenticate user        |
+| /api/auth/register    | POST   | Register new user        |
+| /api/users            | GET    | User management          |
+| /api/courses          | GET    | List courses             |
+| /api/enrollments      | GET    | Enrollment management    |
+| /api/admin            | GET    | Admin panel endpoints    |
+| /api/modules          | GET    | Course modules           |
+| /api/lessons          | GET    | Course lessons           |
+| /api/categories       | GET    | Course categories        |
+| /api/instructor       | GET    | Instructor endpoints     |
 
 ---
 
 ## Deployment
-
-To deploy the project:
 
 1. Host the backend on platforms such as Render, Railway, or Heroku.
 2. Host the frontend on Vercel, Netlify, or similar platforms.
@@ -202,26 +193,7 @@ To deploy the project:
 
 ---
 
-## Contributing
-
-To contribute:
-
-1. Fork the repository.
-2. Create a new feature branch.
-3. Commit your changes with clear messages.
-4. Push the branch to your fork.
-5. Open a Pull Request.
-
----
-
-## License
-
-Specify the license here if applicable (MIT, Apache 2.0, etc.).
-
----
-
 ## Maintainer
 
 Simeen Ali
 Bhakta Ranjan Sahu
-

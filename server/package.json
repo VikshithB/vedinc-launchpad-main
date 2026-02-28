@@ -1,6 +1,7 @@
 {
-  "name": "vedinc-backend",
+  "name": "vedinc-server",
   "version": "1.0.0",
+  "private": true,
   "main": "index.js",
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
