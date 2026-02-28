@@ -1,0 +1,25 @@
+DirectoryIndex dist/index.html
+
+RewriteEngine On
+
+# If the request is for a real file in dist/, serve it
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/uploads
+RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} -f
+RewriteRule ^(.*)$ /dist/$1 [L]
+
+# If the request is for a real file in dist/assets/, serve it
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/uploads
+RewriteCond %{REQUEST_URI} !^/dist/
+RewriteCond %{DOCUMENT_ROOT}/dist%{REQUEST_URI} !-f
+RewriteCond %{REQUEST_URI} !\.
+RewriteRule ^(.*)$ /dist/index.html [L]
+
+# SPA fallback: all other non-API/non-file requests to dist/index.html
+RewriteCond %{REQUEST_URI} !^/api
+RewriteCond %{REQUEST_URI} !^/uploads
+RewriteCond %{REQUEST_URI} !^/dist/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /dist/index.html [L]
