@@ -1,0 +1,31 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
+const auth_middleware_1 = require("./middlewares/auth.middleware");
+const role_middleware_1 = require("./middlewares/role.middleware");
+const course_routes_1 = __importDefault(require("./modules/courses/course.routes"));
+const user_course_routes_1 = __importDefault(require("./modules/courses/user.course.routes"));
+const admin_routes_1 = __importDefault(require("./modules/admin/admin.routes"));
+const enrollment_routes_1 = __importDefault(require("./modules/enrollment/enrollment.routes"));
+const module_routes_1 = __importDefault(require("./modules/modules/module.routes"));
+const lesson_routes_1 = __importDefault(require("./modules/lessons/lesson.routes"));
+const category_routes_1 = __importDefault(require("./modules/categories/category.routes"));
+const instructor_routes_1 = __importDefault(require("./modules/instructor/instructor.routes"));
+const router = (0, express_1.Router)();
+router.get("/admin/test", auth_middleware_1.authenticate, (0, role_middleware_1.requireRole)("ADMIN"), (_req, res) => {
+    res.json({ message: "Admin access granted" });
+});
+router.use("/enrollments", enrollment_routes_1.default);
+router.use("/auth", auth_routes_1.default);
+router.use("/courses", course_routes_1.default);
+router.use("/user-courses", user_course_routes_1.default);
+router.use("/admin", admin_routes_1.default);
+router.use("/modules", module_routes_1.default);
+router.use("/lessons", lesson_routes_1.default);
+router.use("/categories", category_routes_1.default);
+router.use("/instructor", instructor_routes_1.default);
+exports.default = router;
